@@ -19,10 +19,10 @@ YazilimProjesiGelistirmeDeepFake/
 
 | Rol | Sorumlu | Klasör |
 |-----|---------|--------|
-| Scrum Master | - | - |
-| Product Owner | - | - |
+| Scrum Master | Mehmet Oytun Özer | - |
+| Product Owner | Ali Çelik | - |
 | Backend & API | Furkan İşık | `/backend` |
-| Frontend | - | `/frontend` |
+| Frontend | İlhan Yanmaz | `/frontend` |
 | ML & Model | Muhammet Ay | `/ml` |
 | Veri & EDA | Ram Ismail | `/ml` |
 
