@@ -178,36 +178,54 @@ Notebook `kagglehub` üzerinden indirme yapıyor. Colab'da çalıştırıyorsan 
 
 ## Model Ağırlıkları
 
-Eğitilmiş `.keras` dosyaları GitHub'a doğrudan yüklenemez:
+Eğitilmiş `.keras` dosyaları boyut sebebiyle (`best_efficientnetv2m.keras` 207 MB, GitHub'ın 100 MB sınırını aşıyor) repo içinde değil — **GitHub Releases** üzerinden dağıtılıyor.
 
-| Dosya | Boyut | Durum |
-|---|---:|---|
-| `best_xception.keras` | ~84 MB | GitHub'ın yumuşak uyarı sınırı (50 MB) üzerinde |
-| `best_efficientnetv2m.keras` | ~208 MB | GitHub'ın **sert sınırı (100 MB)** üzerinde — direkt push edilemez |
+### Release: [`v1.0-scrum2-models`](https://github.com/aliiceliiik/YazilimProjesiGelistirmeDeepFake/releases/tag/v1.0-scrum2-models)
 
-### Önerilen Çözüm: GitHub Releases
+| Dosya | Boyut | Test Accuracy | Direkt İndirme |
+|---|---:|---:|---|
+| `best_efficientnetv2m.keras` | 207 MB | **0.9807** ✅ Production | [İndir](https://github.com/aliiceliiik/YazilimProjesiGelistirmeDeepFake/releases/download/v1.0-scrum2-models/best_efficientnetv2m.keras) |
+| `best_xception.1.keras` | 83 MB | 0.9729 | [İndir](https://github.com/aliiceliiik/YazilimProjesiGelistirmeDeepFake/releases/download/v1.0-scrum2-models/best_xception.1.keras) |
 
-1. Repo ana sayfası → **Releases** → **Draft a new release**
-2. Tag: `v1.0-scrum2-models`
-3. İki `.keras` dosyasını sürükle bırak (Release attachments 2GB'a kadar destekler).
-4. Yayınla. Backend `requirements.txt`'inde model URL'sini güncelle.
+### Programatik İndirme
 
-### Alternatif: Git LFS
+**Python (`urllib`):**
+```python
+import urllib.request
 
-```bash
-git lfs install
-git lfs track "*.keras"
-git add .gitattributes
-git add model_egitimi/*.keras
-git commit -m "Add trained models via LFS"
-git push
+MODEL_URL = "https://github.com/aliiceliiik/YazilimProjesiGelistirmeDeepFake/releases/download/v1.0-scrum2-models/best_efficientnetv2m.keras"
+urllib.request.urlretrieve(MODEL_URL, "best_efficientnetv2m.keras")
 ```
 
-> Not: GitHub ücretsiz hesabında LFS için 1GB depo + 1GB/ay bant genişliği kotası var.
+**curl / wget:**
+```bash
+# curl
+curl -L -o best_efficientnetv2m.keras \
+  https://github.com/aliiceliiik/YazilimProjesiGelistirmeDeepFake/releases/download/v1.0-scrum2-models/best_efficientnetv2m.keras
 
-### Alternatif: HuggingFace Hub
+# wget
+wget https://github.com/aliiceliiik/YazilimProjesiGelistirmeDeepFake/releases/download/v1.0-scrum2-models/best_efficientnetv2m.keras
+```
 
-Modelleri `huggingface_hub` ile yükle, sonra backend `from_pretrained` ile çekebilir.
+### Modeli Yükleme
+
+```python
+import tensorflow as tf
+
+# Önce yapıyı kur (notebook'taki ile aynı), sonra ağırlıkları yükle
+model = tf.keras.models.load_model("best_efficientnetv2m.keras")
+
+# Tahmin
+import numpy as np
+from PIL import Image
+img = Image.open("test.jpg").convert("RGB").resize((224, 224))
+x = np.expand_dims(np.array(img), axis=0)  # (1, 224, 224, 3)
+prob_fake = float(model.predict(x, verbose=0)[0][0])
+label = "Deepfake" if prob_fake > 0.5 else "Real"
+print(f"{label} (fake_prob={prob_fake:.4f})")
+```
+
+> Backend (`../backend/`) bu modeli production'da kullanıyor.
 
 ---
 
