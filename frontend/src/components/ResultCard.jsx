@@ -24,9 +24,6 @@ const ResultCard = ({ prediction, confidence }) => {
   const isReal = prediction === 'Real';
   const pct = Math.round(confidence * 100);
   const label = isReal ? 'Gerçek Görüntü' : 'Deepfake Tespit Edildi';
-  const sublabel = isReal
-    ? 'Bu görsel gerçek bir fotoğrafa ait görünüyor.'
-    : 'Bu görsel yapay zeka tarafından üretilmiş olabilir.';
 
   const gradFrom = isReal ? '#10b981' : '#f43f5e';
   const gradTo = isReal ? '#34d399' : '#fb7185';
@@ -92,7 +89,7 @@ const ResultCard = ({ prediction, confidence }) => {
       {/* ── Confidence ── */}
       <motion.div
         style={{
-          background: 'var(--surface)',
+          background: 'var(--s2)',
           border: `1px solid ${isReal ? 'var(--ok-border)' : 'var(--err-border)'}`,
           borderRadius: 16,
           padding: 24,
