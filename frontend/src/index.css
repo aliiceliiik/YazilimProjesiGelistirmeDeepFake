@@ -604,6 +604,8 @@ body {
   border-radius: var(--r-md);
   padding: 20px;
   display: flex; flex-direction: column; gap: 16px;
+  height: 100%;
+  justify-content: center;
 }
 
 .result-card.ok  { background: var(--ok-lo);  border: 1px solid var(--ok-border);  }
@@ -703,4 +705,16 @@ body {
 }
 .btn-primary {
   animation: pulseGlow 2s infinite;
+}
+
+/* İki Sütunlu Masaüstü ve Mobil Düzeni */
+.two-column-layout {
+  display: flex;
+  gap: 15px;
+  align-items: stretch;
+}
+@media (max-width: 640px) {
+  .two-column-layout {
+    flex-direction: column;
+  }
 }
