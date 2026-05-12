@@ -15,6 +15,7 @@ const ACCEPTED_MIME = new Set([
 
 const ACCEPTED_EXT = '.jpg,.jpeg,.png,.webp,.heic,.heif,.bmp,.tiff,.tif';
 const MAX_BYTES = 10 * 1024 * 1024; // 10 MB
+const MIN_BYTES = 20 * 1024; // 20 KB
 
 /* ── Validation ───────────────────────────────────────────────── */
 function validate(file) {
@@ -27,6 +28,10 @@ function validate(file) {
   if (file.size > MAX_BYTES) {
     return `Dosya boyutu çok büyük. Maksimum 10 MB kabul edilir (${(file.size / 1024 / 1024).toFixed(1)} MB yüklendi).`;
   }
+  if (file.size < MIN_BYTES) {
+    return 'Dosya boyutu çok küçük (Min 20 KB). Lütfen yapay zekanın analiz edebileceği netlikte bir fotoğraf yükleyin.';
+  }
+
   return null;
 }
 
@@ -79,9 +84,19 @@ const UploadBox = ({ onFileSelect, disabled = false, currentFile }) => {
     if (err) { setError(err); return; }
 
     const reader = new FileReader();
-    reader.onload = (e) => setPreview(e.target.result);
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        if (img.width < 250 || img.height < 250) {
+          setError('Çözünürlük çok düşük. Detaylı analiz için fotoğraf en az 250x250 piksel boyutunda olmalıdır.');
+          return;
+        }
+        setPreview(e.target.result);
+        onFileSelect(file);
+      };
+      img.src = e.target.result;
+    };
     reader.readAsDataURL(file);
-    onFileSelect(file);
   }, [onFileSelect]);
 
   /* ── Drag events (counter-based — NO flicker) ─ */
@@ -117,10 +132,10 @@ const UploadBox = ({ onFileSelect, disabled = false, currentFile }) => {
   };
 
   /* ── Click / input ─ */
-  const handleClick = () => { 
+  const handleClick = () => {
     if (disabled) return;
     if (preview) return; // EĞER EKRANDA RESİM VARSA DOSYA SEÇİCİYİ AÇMA
-    inputRef.current?.click(); 
+    inputRef.current?.click();
   };
   const handleChange = (e) => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ''; };
 
