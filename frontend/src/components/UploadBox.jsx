@@ -117,7 +117,11 @@ const UploadBox = ({ onFileSelect, disabled = false, currentFile }) => {
   };
 
   /* ── Click / input ─ */
-  const handleClick = () => { if (!disabled) inputRef.current?.click(); };
+  const handleClick = () => { 
+    if (disabled) return;
+    if (preview) return; // EĞER EKRANDA RESİM VARSA DOSYA SEÇİCİYİ AÇMA
+    inputRef.current?.click(); 
+  };
   const handleChange = (e) => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ''; };
 
   /* ── Clear ─ */
