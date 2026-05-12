@@ -127,6 +127,7 @@ const UploadBox = ({ onFileSelect, disabled = false, currentFile }) => {
     dragCounter.current = 0;
     setIsDrag(false);
     if (disabled) return;
+    if (preview) return; // EĞER EKRANDA RESİM VARSA YENİ DOSYA KABUL ETME
     const file = e.dataTransfer.files?.[0];
     if (file) handleFile(file);
   };
