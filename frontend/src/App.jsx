@@ -1,21 +1,21 @@
 import { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import UploadBox    from './components/UploadBox';
-import ResultCard   from './components/ResultCard';
-import Loader       from './components/Loader';
+import UploadBox from './components/UploadBox';
+import ResultCard from './components/ResultCard';
+import Loader from './components/Loader';
 import { predictImage } from './services/api';
 
 /* ── Framer variants ───────────────────────────────────────────── */
 const fadeUp = {
   initial: { opacity: 0, y: 10 },
-  animate: { opacity: 1, y: 0, transition: { duration: 0.3, ease: [0.4,0,0.2,1] } },
-  exit:    { opacity: 0, y: -8, transition: { duration: 0.2 } },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.3, ease: [0.4, 0, 0.2, 1] } },
+  exit: { opacity: 0, y: -8, transition: { duration: 0.2 } },
 };
 
 const heightReveal = {
   initial: { opacity: 0, height: 0, overflow: 'hidden' },
-  animate: { opacity: 1, height: 'auto', overflow: 'hidden', transition: { duration: 0.3, ease: [0.4,0,0.2,1] } },
-  exit:    { opacity: 0, height: 0,    overflow: 'hidden', transition: { duration: 0.22 } },
+  animate: { opacity: 1, height: 'auto', overflow: 'hidden', transition: { duration: 0.3, ease: [0.4, 0, 0.2, 1] } },
+  exit: { opacity: 0, height: 0, overflow: 'hidden', transition: { duration: 0.22 } },
 };
 
 /* ── Icon helpers ──────────────────────────────────────────────── */
@@ -48,7 +48,7 @@ const RefreshIcon = () => (
 
 const ApiErrIcon = () => (
   <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
-    style={{ color:'var(--err-hi)', flexShrink:0, marginTop:1 }}>
+    style={{ color: 'var(--err-hi)', flexShrink: 0, marginTop: 1 }}>
     <path strokeLinecap="round" strokeLinejoin="round"
       d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
   </svg>
@@ -56,11 +56,11 @@ const ApiErrIcon = () => (
 
 /* ── App ───────────────────────────────────────────────────────── */
 export default function App() {
-  const [file,    setFile]    = useState(null);
+  const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [result,  setResult]  = useState(null);
-  const [apiErr,  setApiErr]  = useState('');
-  const [dark,    setDark]    = useState(true);
+  const [result, setResult] = useState(null);
+  const [apiErr, setApiErr] = useState('');
+  const [dark, setDark] = useState(true);
 
   /* Apply theme to <html> element */
   useEffect(() => {
@@ -139,8 +139,8 @@ export default function App() {
             <motion.span
               key={dark ? 'sun' : 'moon'}
               initial={{ rotate: -25, opacity: 0 }}
-              animate={{ rotate: 0,   opacity: 1 }}
-              exit={{ rotate: 25,     opacity: 0 }}
+              animate={{ rotate: 0, opacity: 1 }}
+              exit={{ rotate: 25, opacity: 0 }}
               transition={{ duration: 0.16 }}
               style={{ display: 'flex' }}
             >
@@ -156,7 +156,7 @@ export default function App() {
           style={{ width: '100%', maxWidth: 488 }}
           initial={{ opacity: 0, y: 22 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45, ease: [0.4,0,0.2,1] }}
+          transition={{ duration: 0.45, ease: [0.4, 0, 0.2, 1] }}
         >
           {/* ════ Card ════ */}
           <div className="card" style={{ position: 'relative' }}>
@@ -179,78 +179,96 @@ export default function App() {
 
               <div className="sep" />
 
-              {/* ── Upload ── */}
-              <UploadBox
-                onFileSelect={handleFileSelect}
-                disabled={loading}
-                currentFile={file}
-              />
+              {/* ── İki Sütunlu Düzen (Sonuç Gelince Çalışır) ── */}
+              <div className={result ? 'two-column-layout' : ''}>
 
-              {/* ── Analyze button ── */}
+                {/* SOL SÜTUN: Yüklenen Resim Kutusu */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <UploadBox
+                    onFileSelect={handleFileSelect}
+                    disabled={loading}
+                    currentFile={file}
+                  />
+                </div>
+
+                {/* SAĞ SÜTUN: Sonuç Kartı (Sadece analiz bitince görünür) */}
+                {result && (
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <ResultCard prediction={result.prediction} confidence={result.confidence} />
+                  </div>
+                )}
+
+              </div>
+
+              {/* ── Alt Yasal Uyarı Metni (İki sütunun tam altına gelir) ── */}
+              {result && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+                  style={{
+                    marginTop: '15px',
+                    padding: '12px 15px',
+                    borderRadius: '10px',
+                    background: result.prediction === 'Real' ? 'rgba(16,185,129,0.05)' : 'rgba(244,63,94,0.05)',
+                    border: result.prediction === 'Real' ? '1px solid var(--ok-border)' : '1px solid var(--err-border)',
+                    fontSize: '14.5px', color: 'var(--t2)', lineHeight: '1.6', textAlign: 'center'
+                  }}
+                >
+                  <span style={{ fontWeight: 500, color: result.prediction === 'Real' ? 'var(--ok-hi)' : 'var(--err-hi)' }}>
+                    {result.prediction === 'Real' ? 'Bu görsel gerçek bir fotoğrafa ait görünüyor.' : 'Bu görsel yapay zeka tarafından üretilmiş olabilir.'}
+                  </span>
+                  <br />
+                  <span style={{ color: 'var(--t3)', display: 'inline-block', marginTop: '6px' }}>
+                    Bu sonuç bir yapay zeka modeli tarafından üretilmiştir ve kesin kanıt niteliği taşımaz.
+                  </span>
+                </motion.div>
+              )}
+
+              {/* ── Analiz Et Butonu ── */}
               <AnimatePresence>
                 {canAnalyze && (
-                  <motion.div key="cta" variants={fadeUp} initial="initial" animate="animate" exit="exit">
-                    <button onClick={handleAnalyze} className="btn-primary" id="analyze-btn">
+                  <motion.div key="cta" variants={fadeUp} initial="initial" animate="animate" exit="exit" style={{ marginTop: 15 }}>
+                    <button onClick={handleAnalyze} className="btn-primary btn-pulse" id="analyze-btn">
                       <SearchIcon /> Analiz Et
                     </button>
                   </motion.div>
                 )}
               </AnimatePresence>
 
-              {/* ── Loader ── */}
+              {/* ── Yükleniyor (Loader) Ekranı ── */}
               <AnimatePresence>
                 {loading && (
-                  <motion.div key="loader" variants={heightReveal} initial="initial" animate="animate" exit="exit">
+                  <motion.div key="loader" variants={heightReveal} initial="initial" animate="animate" exit="exit" style={{ marginTop: 15 }}>
                     <Loader />
                   </motion.div>
                 )}
               </AnimatePresence>
 
-              {/* ── API Error ── */}
+              {/* ── API Hata Mesajı ── */}
               <AnimatePresence>
                 {apiErr && (
-                  <motion.div key="apierr" variants={fadeUp} initial="initial" animate="animate" exit="exit"
-                    className="error-box">
+                  <motion.div key="apierr" variants={fadeUp} initial="initial" animate="animate" exit="exit" className="error-box" style={{ marginTop: 15 }}>
                     <ApiErrIcon />
                     <div>
-                      <p style={{ fontSize: 14.5, fontWeight: 600, color: 'var(--err-hi)', marginBottom: 2 }}>
-                        Hata Oluştu
-                      </p>
+                      <p style={{ fontSize: 14.5, fontWeight: 600, color: 'var(--err-hi)', marginBottom: 2 }}>Hata Oluştu</p>
                       <p style={{ fontSize: 13.5, color: 'var(--t2)', lineHeight: 1.55 }}>{apiErr}</p>
                     </div>
                   </motion.div>
                 )}
               </AnimatePresence>
 
-              {/* ── Result ── */}
+              {/* ── Yeni Analiz Butonu (Sonuç gelince en altta çıkar) ── */}
               <AnimatePresence>
                 {result && (
-                  <motion.div
-                    key="result"
-                    variants={heightReveal}
-                    initial="initial"
-                    animate="animate"
-                    exit="exit"
-                  >
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                      <ResultCard
-                        prediction={result.prediction}
-                        confidence={result.confidence}
-                      />
-
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 1.4 }}
-                      >
-                        <button onClick={handleReset} className="btn-ghost" id="reset-btn">
-                          <RefreshIcon /> Yeni Analiz Başlat
-                        </button>
-                      </motion.div>
-                    </div>
+                  <motion.div key="reset" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} style={{ marginTop: 15 }}>
+                    <button onClick={handleReset} className="btn-ghost" id="reset-btn">
+                      <RefreshIcon /> Yeni Analiz Başlat
+                    </button>
                   </motion.div>
                 )}
               </AnimatePresence>
+
+
+
             </div>
 
             {/* ── Card footer ── */}

@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback } from 'react';
+import { useRef, useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /* ── Accepted MIME types & labels ─────────────────────────────── */
@@ -14,7 +14,8 @@ const ACCEPTED_MIME = new Set([
 ]);
 
 const ACCEPTED_EXT = '.jpg,.jpeg,.png,.webp,.heic,.heif,.bmp,.tiff,.tif';
-const MAX_BYTES    = 10 * 1024 * 1024; // 10 MB
+const MAX_BYTES = 10 * 1024 * 1024; // 10 MB
+const MIN_BYTES = 20 * 1024; // 20 KB
 
 /* ── Validation ───────────────────────────────────────────────── */
 function validate(file) {
@@ -27,6 +28,10 @@ function validate(file) {
   if (file.size > MAX_BYTES) {
     return `Dosya boyutu çok büyük. Maksimum 10 MB kabul edilir (${(file.size / 1024 / 1024).toFixed(1)} MB yüklendi).`;
   }
+  if (file.size < MIN_BYTES) {
+    return 'Dosya boyutu çok küçük (Min 20 KB). Lütfen yapay zekanın analiz edebileceği netlikte bir fotoğraf yükleyin.';
+  }
+
   return null;
 }
 
@@ -58,12 +63,19 @@ const WarnIcon = () => (
    KEY FEATURE: drag counter-based state — zero flickering
    ────────────────────────────────────────────────────────────── */
 const UploadBox = ({ onFileSelect, disabled = false, currentFile }) => {
-  const [isDrag,  setIsDrag]  = useState(false);
+  const [isDrag, setIsDrag] = useState(false);
   const [preview, setPreview] = useState(null);
-  const [error,   setError]   = useState('');
-  const inputRef      = useRef(null);
+  const [error, setError] = useState('');
+  const inputRef = useRef(null);
   // Counter prevents flicker from child-element dragenter/dragleave pairs
-  const dragCounter   = useRef(0);
+  const dragCounter = useRef(0);
+  // Ana sayfadan currentFile null yapıldığında önizlemeyi de sil
+  useEffect(() => {
+    if (!currentFile) {
+      setPreview(null);
+    }
+  }, [currentFile]);
+
 
   /* ── Process a file ─ */
   const handleFile = useCallback((file) => {
@@ -72,9 +84,19 @@ const UploadBox = ({ onFileSelect, disabled = false, currentFile }) => {
     if (err) { setError(err); return; }
 
     const reader = new FileReader();
-    reader.onload = (e) => setPreview(e.target.result);
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        if (img.width < 250 || img.height < 250) {
+          setError('Çözünürlük çok düşük. Detaylı analiz için fotoğraf en az 250x250 piksel boyutunda olmalıdır.');
+          return;
+        }
+        setPreview(e.target.result);
+        onFileSelect(file);
+      };
+      img.src = e.target.result;
+    };
     reader.readAsDataURL(file);
-    onFileSelect(file);
   }, [onFileSelect]);
 
   /* ── Drag events (counter-based — NO flicker) ─ */
@@ -105,12 +127,17 @@ const UploadBox = ({ onFileSelect, disabled = false, currentFile }) => {
     dragCounter.current = 0;
     setIsDrag(false);
     if (disabled) return;
+    if (preview) return; // EĞER EKRANDA RESİM VARSA YENİ DOSYA KABUL ETME
     const file = e.dataTransfer.files?.[0];
     if (file) handleFile(file);
   };
 
   /* ── Click / input ─ */
-  const handleClick  = () => { if (!disabled) inputRef.current?.click(); };
+  const handleClick = () => {
+    if (disabled) return;
+    if (preview) return; // EĞER EKRANDA RESİM VARSA DOSYA SEÇİCİYİ AÇMA
+    inputRef.current?.click();
+  };
   const handleChange = (e) => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ''; };
 
   /* ── Clear ─ */
@@ -138,8 +165,8 @@ const UploadBox = ({ onFileSelect, disabled = false, currentFile }) => {
         onClick={handleClick}
         className={[
           'drop-zone',
-          isDrag    ? 'is-drag'     : '',
-          disabled  ? 'is-disabled' : '',
+          isDrag ? 'is-drag' : '',
+          disabled ? 'is-disabled' : '',
         ].join(' ')}
       >
         <input
@@ -205,6 +232,9 @@ const UploadBox = ({ onFileSelect, disabled = false, currentFile }) => {
                 </p>
                 <p className="dz-sub">
                   JPG, PNG, WebP, HEIC, BMP, TIFF &bull; Maks 10 MB
+                </p>
+                <p style={{ fontSize: 13, color: 'var(--brand-hi)', marginTop: 8, fontWeight: 500 }}>
+                  * En iyi sonuç için yalnızca tek ve net bir yüz içeren fotoğraflar yükleyin.
                 </p>
               </div>
 

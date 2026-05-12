@@ -21,16 +21,13 @@ const WarnIcon = () => (
 const ResultCard = ({ prediction, confidence }) => {
   const [counter, setCounter] = useState(0);
 
-  const isReal  = prediction === 'Real';
-  const pct     = Math.round(confidence * 100);
-  const label   = isReal ? 'Gerçek Görüntü' : 'Deepfake Tespit Edildi';
-  const sublabel = isReal
-    ? 'Bu görsel gerçek bir fotoğrafa ait görünüyor.'
-    : 'Bu görsel yapay zeka tarafından üretilmiş olabilir.';
+  const isReal = prediction === 'Real';
+  const pct = Math.round(confidence * 100);
+  const label = isReal ? 'Gerçek Görüntü' : 'Deepfake Tespit Edildi';
 
   const gradFrom = isReal ? '#10b981' : '#f43f5e';
-  const gradTo   = isReal ? '#34d399' : '#fb7185';
-  const hiColor  = isReal ? 'var(--ok-hi)' : 'var(--err-hi)';
+  const gradTo = isReal ? '#34d399' : '#fb7185';
+  const hiColor = isReal ? 'var(--ok-hi)' : 'var(--err-hi)';
 
   /* Animated confidence counter (ease-out cubic) */
   useEffect(() => {
@@ -49,8 +46,8 @@ const ResultCard = ({ prediction, confidence }) => {
 
   const confidenceLabel =
     pct >= 90 ? 'Yüksek güven' :
-    pct >= 70 ? 'Orta güven'   :
-                'Düşük güven';
+      pct >= 70 ? 'Orta güven' :
+        'Düşük güven';
 
   return (
     <motion.div
@@ -91,11 +88,18 @@ const ResultCard = ({ prediction, confidence }) => {
 
       {/* ── Confidence ── */}
       <motion.div
-        style={{ display: 'flex', flexDirection: 'column', gap: 9 }}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3 }}
+        style={{
+          background: 'var(--s2)',
+          border: `1px solid ${isReal ? 'var(--ok-border)' : 'var(--err-border)'}`,
+          borderRadius: 16,
+          padding: 24,
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%',
+          justifyContent: 'center',
+        }}
       >
+
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
           <span style={{ fontSize: 15, fontWeight: 500, color: 'var(--t2)' }}>Model Güveni</span>
           <span style={{
@@ -124,26 +128,7 @@ const ResultCard = ({ prediction, confidence }) => {
           {pct >= 90 ? '●' : pct >= 70 ? '◑' : '○'} {confidenceLabel}
         </p>
       </motion.div>
-
-      {/* ── Note ── */}
-      <motion.p
-        style={{
-          fontSize: 14.5, color: 'var(--t2)',
-          lineHeight: 1.6,
-          padding: '10px 12px',
-          borderRadius: 10,
-          background: isReal ? 'rgba(16,185,129,0.05)' : 'rgba(244,63,94,0.05)',
-          border: isReal ? '1px solid var(--ok-border)' : '1px solid var(--err-border)',
-        }}
-        initial={{ opacity: 0, y: 6 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.65 }}
-      >
-        {sublabel}{' '}
-        <span style={{ color: 'var(--t3)' }}>
-          Bu sonuç bir yapay zeka modeli tarafından üretilmiştir ve kesin kanıt niteliği taşımaz.
-        </span>
-      </motion.p>
+      
     </motion.div>
   );
 };
