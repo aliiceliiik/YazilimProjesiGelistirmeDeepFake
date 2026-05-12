@@ -232,6 +232,9 @@ const UploadBox = ({ onFileSelect, disabled = false, currentFile }) => {
                 <p className="dz-sub">
                   JPG, PNG, WebP, HEIC, BMP, TIFF &bull; Maks 10 MB
                 </p>
+                <p style={{ fontSize: 13, color: 'var(--brand-hi)', marginTop: 8, fontWeight: 500 }}>
+                  * En iyi sonuç için yalnızca tek ve net bir yüz içeren fotoğraflar yükleyin.
+                </p>
               </div>
 
               {!isDrag && (
