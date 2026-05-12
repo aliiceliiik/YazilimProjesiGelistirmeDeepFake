@@ -13,7 +13,7 @@ const api = axios.create({
  */
 export async function predictImage(file) {
   const form = new FormData();
-  form.append('image', file);
+  form.append('file', file);
 
   const { data } = await api.post('/predict', form, {
     headers: { 'Content-Type': 'multipart/form-data' },
