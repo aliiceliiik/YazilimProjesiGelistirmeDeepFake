@@ -696,3 +696,11 @@ body {
   }
 }
 
+@keyframes pulseGlow {
+  0% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.6); }
+  70% { box-shadow: 0 0 0 14px rgba(139, 92, 246, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); }
+}
+.btn-primary {
+  animation: pulseGlow 2s infinite;
+}
