@@ -21,16 +21,16 @@ const WarnIcon = () => (
 const ResultCard = ({ prediction, confidence }) => {
   const [counter, setCounter] = useState(0);
 
-  const isReal  = prediction === 'Real';
-  const pct     = Math.round(confidence * 100);
-  const label   = isReal ? 'Gerçek Görüntü' : 'Deepfake Tespit Edildi';
+  const isReal = prediction === 'Real';
+  const pct = Math.round(confidence * 100);
+  const label = isReal ? 'Gerçek Görüntü' : 'Deepfake Tespit Edildi';
   const sublabel = isReal
     ? 'Bu görsel gerçek bir fotoğrafa ait görünüyor.'
     : 'Bu görsel yapay zeka tarafından üretilmiş olabilir.';
 
   const gradFrom = isReal ? '#10b981' : '#f43f5e';
-  const gradTo   = isReal ? '#34d399' : '#fb7185';
-  const hiColor  = isReal ? 'var(--ok-hi)' : 'var(--err-hi)';
+  const gradTo = isReal ? '#34d399' : '#fb7185';
+  const hiColor = isReal ? 'var(--ok-hi)' : 'var(--err-hi)';
 
   /* Animated confidence counter (ease-out cubic) */
   useEffect(() => {
@@ -49,8 +49,8 @@ const ResultCard = ({ prediction, confidence }) => {
 
   const confidenceLabel =
     pct >= 90 ? 'Yüksek güven' :
-    pct >= 70 ? 'Orta güven'   :
-                'Düşük güven';
+      pct >= 70 ? 'Orta güven' :
+        'Düşük güven';
 
   return (
     <motion.div
@@ -139,10 +139,12 @@ const ResultCard = ({ prediction, confidence }) => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.65 }}
       >
-        {sublabel}{' '}
-        <span style={{ color: 'var(--t3)' }}>
+        {sublabel}
+        <br />
+        <span style={{ color: 'var(--t3)', display: 'inline-block', marginTop: '6px' }}>
           Bu sonuç bir yapay zeka modeli tarafından üretilmiştir ve kesin kanıt niteliği taşımaz.
         </span>
+
       </motion.p>
     </motion.div>
   );
