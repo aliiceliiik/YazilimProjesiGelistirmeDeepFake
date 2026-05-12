@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback } from 'react';
+import { useRef, useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /* ── Accepted MIME types & labels ─────────────────────────────── */
@@ -14,7 +14,7 @@ const ACCEPTED_MIME = new Set([
 ]);
 
 const ACCEPTED_EXT = '.jpg,.jpeg,.png,.webp,.heic,.heif,.bmp,.tiff,.tif';
-const MAX_BYTES    = 10 * 1024 * 1024; // 10 MB
+const MAX_BYTES = 10 * 1024 * 1024; // 10 MB
 
 /* ── Validation ───────────────────────────────────────────────── */
 function validate(file) {
@@ -58,12 +58,19 @@ const WarnIcon = () => (
    KEY FEATURE: drag counter-based state — zero flickering
    ────────────────────────────────────────────────────────────── */
 const UploadBox = ({ onFileSelect, disabled = false, currentFile }) => {
-  const [isDrag,  setIsDrag]  = useState(false);
+  const [isDrag, setIsDrag] = useState(false);
   const [preview, setPreview] = useState(null);
-  const [error,   setError]   = useState('');
-  const inputRef      = useRef(null);
+  const [error, setError] = useState('');
+  const inputRef = useRef(null);
   // Counter prevents flicker from child-element dragenter/dragleave pairs
-  const dragCounter   = useRef(0);
+  const dragCounter = useRef(0);
+  // Ana sayfadan currentFile null yapıldığında önizlemeyi de sil
+  useEffect(() => {
+    if (!currentFile) {
+      setPreview(null);
+    }
+  }, [currentFile]);
+
 
   /* ── Process a file ─ */
   const handleFile = useCallback((file) => {
@@ -110,7 +117,7 @@ const UploadBox = ({ onFileSelect, disabled = false, currentFile }) => {
   };
 
   /* ── Click / input ─ */
-  const handleClick  = () => { if (!disabled) inputRef.current?.click(); };
+  const handleClick = () => { if (!disabled) inputRef.current?.click(); };
   const handleChange = (e) => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ''; };
 
   /* ── Clear ─ */
@@ -138,8 +145,8 @@ const UploadBox = ({ onFileSelect, disabled = false, currentFile }) => {
         onClick={handleClick}
         className={[
           'drop-zone',
-          isDrag    ? 'is-drag'     : '',
-          disabled  ? 'is-disabled' : '',
+          isDrag ? 'is-drag' : '',
+          disabled ? 'is-disabled' : '',
         ].join(' ')}
       >
         <input
