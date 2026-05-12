@@ -180,7 +180,7 @@ export default function App() {
               <div className="sep" />
 
               {/* ── İki Sütunlu Düzen (Sonuç Gelince Çalışır) ── */}
-              <div style={{ display: result ? 'flex' : 'block', gap: '15px', alignItems: 'stretch' }}>
+              <div className={result ? 'two-column-layout' : ''}>
 
                 {/* SOL SÜTUN: Yüklenen Resim Kutusu */}
                 <div style={{ flex: 1, minWidth: 0 }}>
@@ -193,12 +193,35 @@ export default function App() {
 
                 {/* SAĞ SÜTUN: Sonuç Kartı (Sadece analiz bitince görünür) */}
                 {result && (
-                  <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
                     <ResultCard prediction={result.prediction} confidence={result.confidence} />
                   </div>
                 )}
 
               </div>
+
+              {/* ── Alt Yasal Uyarı Metni (İki sütunun tam altına gelir) ── */}
+              {result && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+                  style={{
+                    marginTop: '15px',
+                    padding: '12px 15px',
+                    borderRadius: '10px',
+                    background: result.prediction === 'Real' ? 'rgba(16,185,129,0.05)' : 'rgba(244,63,94,0.05)',
+                    border: result.prediction === 'Real' ? '1px solid var(--ok-border)' : '1px solid var(--err-border)',
+                    fontSize: '14.5px', color: 'var(--t2)', lineHeight: '1.6', textAlign: 'center'
+                  }}
+                >
+                  <span style={{ fontWeight: 500, color: result.prediction === 'Real' ? 'var(--ok-hi)' : 'var(--err-hi)' }}>
+                    {result.prediction === 'Real' ? 'Bu görsel gerçek bir fotoğrafa ait görünüyor.' : 'Bu görsel yapay zeka tarafından üretilmiş olabilir.'}
+                  </span>
+                  <br />
+                  <span style={{ color: 'var(--t3)', display: 'inline-block', marginTop: '6px' }}>
+                    Bu sonuç bir yapay zeka modeli tarafından üretilmiştir ve kesin kanıt niteliği taşımaz.
+                  </span>
+                </motion.div>
+              )}
 
               {/* ── Analiz Et Butonu ── */}
               <AnimatePresence>
