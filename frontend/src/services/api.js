@@ -11,6 +11,7 @@ const api = axios.create({
  * @param {File} file
  * @returns {Promise<{ prediction: "Real" | "Fake", confidence: number }>}
  */
+
 export async function predictImage(file) {
   const form = new FormData();
   form.append('file', file);
@@ -19,5 +20,9 @@ export async function predictImage(file) {
     headers: { 'Content-Type': 'multipart/form-data' },
   });
 
-  return data;
+  return {
+    prediction: data.label,
+    confidence: data.confidence,
+  };
 }
+
