@@ -1,0 +1,3 @@
+Model,Inference (ms/img),Inference (s/img),FPS (img/sn),Kabul (<2s)
+Xception,9.1938,0.0092,108.7686,GECTI
+EfficientNetV2M,20.1127,0.0201,49.7197,GECTI
