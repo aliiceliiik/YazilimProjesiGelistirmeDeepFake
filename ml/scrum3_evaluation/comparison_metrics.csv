@@ -1,0 +1,3 @@
+Model,Accuracy,Precision (Weighted),Recall (Weighted),F1-Score (Weighted),Precision (Real),Recall (Real),F1 (Real),Precision (Deepfake),Recall (Deepfake),F1 (Deepfake)
+Xception,0.9729,0.9730,0.9729,0.9729,0.9780,0.9678,0.9729,0.9680,0.9781,0.9730
+EfficientNetV2M,0.9807,0.9808,0.9807,0.9807,0.9843,0.9772,0.9807,0.9772,0.9843,0.9808

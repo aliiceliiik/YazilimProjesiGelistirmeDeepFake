@@ -1,0 +1,19 @@
+# Eğitilmiş model dosyaları (GitHub Releases / LFS / HF Hub üzerinden dağıtılır)
+*.keras
+*.h5
+*.pb
+*.tflite
+
+# Veri seti (Kaggle'dan indiriliyor, repoya konmaz)
+dataset/
+split_data/
+
+# Jupyter / Python
+.ipynb_checkpoints/
+__pycache__/
+*.pyc
+*.pyo
+
+# Sistem
+.DS_Store
+Thumbs.db
